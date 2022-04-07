@@ -1,0 +1,5 @@
+---
+collections:
+  - name: git@github.com:thmsklndr/ansible-collection-infra.git
+    type: git
+
