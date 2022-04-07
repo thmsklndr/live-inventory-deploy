@@ -4,17 +4,52 @@
 ## Preparation
 
 ```
+$ sudo apt install wget build-essential libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+```
+
+### pip for local python package management
+
+```
+$ mkdir -p $HOME/.local/bin
+```
+
+```
+export PATH=$HOME/.local/bin:$PATH
+
+```
+```
 pip install -U pip
 pip install -U pipx
 
 pipx install pipenv
 ```
+
+### pyenv
+
+```
+$ wget https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer
+$ bash pyenv-installer
+``` 
+
+Add the following lines to your `~/.bashrc` file:
+
+
+```
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"    # if `pyenv` is not already on PATH
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+```
+
 ## AWS
 
 ### Installation
 
 pipx install --verbose git+https://github.com/aws/aws-cli.git@v2
 
+### Access credentials
+
+MIssING
 ### General
 
 
@@ -57,6 +92,17 @@ cat /home/pi/.ssh/authorized_keys >> /root/.ssh/authorized_keys
 ```
 
 ### ansible
+
+Prepare the pipenv environment once:
+```
+$ cd live-inventory-deploy
+$ pipenv install
+```
+
+Start the pipenv shell
+```
+$ pipenv shell
+```
 
 ansible-playbook provision.yml -e target=raspberries -e env=dev --skip-tags speedup
 ## Raspberry Pi Configuration

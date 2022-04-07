@@ -53,6 +53,7 @@
         volumes:
           - "/aws-certs:/certs"
         environment:
+          AWS_CERT
           AWSIOT_ENDPOINT:   "{{ aws_endpoint  }}"
           AWS_CA_FILE:       "{{ aws_ca_file | default( omit ) }}"
           AWS_CERT_FILE:     "{{ aws_cert_file | default(omit) }}"
