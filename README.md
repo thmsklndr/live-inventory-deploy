@@ -4,7 +4,7 @@
 ## Preparation
 
 ```
-$ sudo apt install wget build-essential libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+$ sudo apt install wget build-essential libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev python3-venv
 ```
 
 ### pip for local python package management
@@ -81,7 +81,12 @@ aws iot describe-endpoint --endpoint-type iot:Data-ATS
 
 ### SSH
 
+
 * create ssh key-pair if none available
+```
+$ thomas@ventoux:~/.ssh$ ssh-keygen -t ed25519 -a 100 -C COMMENT
+```
+
 * add identity to RPi root account
 ```
 ssh-add <identity>
