@@ -1,0 +1,34 @@
+---
+aws_access_key_id: ""
+aws_secret_access_key: ""
+
+#aws_endpoint: "ab35t74ns0kdw-ats.iot.eu-central-1.amazonaws.com"
+aws_endpoint: "XXX.iot.eu-west-1.amazonaws.com"
+aws_topic: "loka_dev/update/rfid"
+
+aws_cert_file: "XXX-certificate.pem.crt"
+aws_priv_key_file: "XXX-private.pem.key"
+
+aws_ecr_name: "XXX.dkr.ecr.eu-central-1.amazonaws.com"
+aws_local_certs: "~/devel/aws-certs"
+
+
+#rfid_unit_ip:  "192.168.178.90"
+rfid_unit_ip:  "192.168.1.2"
+rfid_unit_power: "40"
+
+common_admin_email: "XXX"
+common_timezone: "Europe/Berlin"
+
+docker_container_data: "/data/docker"
+
+# postfix_use_relayhost: true
+# postfix_relayhost_smtp_server: "mail.your-server.de"
+# postfix_relayhost_account: "smtp@yiqxepgm.de"
+# postfix_relayhost_password: "{{ vault__postfix_relayhost_password }}"
+
+common_ssh_authorized_keys:
+  - user: root
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDHEzObyGrqPWiobTSO0Vm9s4+jZbsjkwG2ZpOvPFRWD TG-IT-Key"
+
+#ssh_pubkeys_absent: []

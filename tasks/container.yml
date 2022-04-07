@@ -35,7 +35,7 @@
 
 - name: copy certs
   ansible.builtin.copy:
-    src: "{{ aws_certs | default( 'certs/') }}"
+    src: "{{ aws_local_certs | default( 'certs/') }}"
     dest: "/aws-certs/"
 
 - name: docker_repository - Log into ECR registry and force re-authorization
@@ -51,9 +51,8 @@
       controller:
         image: "{{ aws_ecr_name }}/live-inventory/controller:latest"
         volumes:
-          - "/aws-certs:/certs"
+          - "{{ aws_certs }}:/certs"
         environment:
-          AWS_CERT
           AWSIOT_ENDPOINT:   "{{ aws_endpoint  }}"
           AWS_CA_FILE:       "{{ aws_ca_file | default( omit ) }}"
           AWS_CERT_FILE:     "{{ aws_cert_file | default(omit) }}"
