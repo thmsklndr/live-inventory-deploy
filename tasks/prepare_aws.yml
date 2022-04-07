@@ -1,0 +1,31 @@
+---
+- name: create aws config dir
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "/root/.aws"
+
+- name: create aws config files
+  ansible.builtin.template:
+    src: "{{ item.0 }}"
+    dest: "{{ item.1 }}"
+  loop:
+    - [ aws_config.j2, /root/.aws/config ]
+    - [ aws_credentials.j2, /root/.aws/credentials ]
+
+- name: install the aws client
+  ansible.builtin.pip:
+    name: git+https://github.com/aws/aws-cli.git@v2
+    executable: pip3
+  tags:
+    - speedup
+
+- name: ecr docker get-authorization-token
+  shell: "aws ecr get-login-password"
+  register: ecr_command
+
+- name: get login password
+  ansible.builtin.set_fact:
+    _aws_ecr_login_password: "{{ ecr_command.stdout }}"
+  no_log: true

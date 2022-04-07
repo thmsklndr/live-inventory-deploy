@@ -1,0 +1,73 @@
+---
+- ansible.builtin.import_role:
+    name: time4oss.infra.bootstrap
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.debug_system_info
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.common
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.git
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.docker
+  tags:
+    - speedup
+
+
+- name: install packages
+  ansible.builtin.apt:
+    name:
+      "{{ rfidunit_packages | union(rfidunit_packages_env) }}"
+
+
+    - name: create local certs dir
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - "/aws-certs"
+        - "/root/.aws"
+
+    - name: copy certs
+      ansible.builtin.copy:
+        src: "certs/"
+        dest: "/aws-certs/"
+
+
+    - name: aws config
+      ansible.builtin.template:
+        src: "{{ item.0 }}"
+        dest: "{{ item.1 }}"
+      loop:
+        - [ aws_config.j2, /root/.aws/config ]
+        - [ aws_credentials.j2, /root/.aws/credentials ]
+
+    - name: install the aws client
+      ansible.builtin.pip:
+        name: git+https://github.com/aws/aws-cli.git@v2
+        executable: pip3
+    # - name: copy the certs
+    #   copy
+
+    # stty -F /dev/ttyUSB0 4800
+
+    # starting gpsd
+    # consider using --nowait
+
+# #root@ventoux:~# cat /etc/default/gpsd 
+# # Devices gpsd should collect to at boot time.
+# # They need to be read/writeable, either by user gpsd or the group dialout.
+# DEVICES="/dev/ttyUSB0"
+# # Other options you want to pass to gpsd
+# GPSD_OPTIONS="--nowait"

@@ -1,0 +1,19 @@
+---
+- hosts: "{{ target }}"
+  gather_facts: false
+  tasks:
+#    - include_vars: "00-@all.yml"
+    - ansible.builtin.include_vars: "vars/vars-all.yml"
+    - ansible.builtin.include_vars: "vars/vars-{{ env }}.yml"
+
+    - ansible.builtin.include_vars: "vars/vars-local.yml"
+
+    - ansible.builtin.include_tasks: tasks/infra.yml
+      tags:
+        - infra
+
+    - ansible.builtin.include_tasks: tasks/prepare_aws.yml
+
+    - ansible.builtin.include_tasks: tasks/container.yml
+      tags:
+        - container

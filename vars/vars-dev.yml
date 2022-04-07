@@ -1,0 +1,9 @@
+---
+docker_users:
+  - pi
+
+rfidunit_packages_env:
+  - python3.8-venv
+  - gpsd
+  - gpsd-clients
+  - libmtp-runtime

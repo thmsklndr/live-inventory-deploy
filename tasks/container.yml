@@ -1,0 +1,97 @@
+---
+- ansible.builtin.set_fact:
+    mosquitto_data_dir: "{{ docker_container_data | default( '/data/docker' ) }}/mosquitto"
+
+- ansible.builtin.set_fact:
+    _mosquitto_config:
+      dir: "/data/docker/mosquitto/config"
+      owner: "1883"
+      group: "1883"
+
+- name: create required folder on host
+  file:
+    state: directory
+    path:  "{{ item.dir }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode:  "{{ item.mode | default( '0o755' ) }}"
+  with_items:
+    - "{{ _mosquitto_config }}"
+
+- name: copy config file
+  template:
+    src:   "mosquitto.conf"
+    dest:  "{{ _mosquitto_config.dir }}/mosquitto.conf"
+    owner: "{{ _mosquitto_config.owner }}"
+    group: "{{ _mosquitto_config.group }}"
+    mode:  "0o644"
+
+- name: create local certs dir
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "/aws-certs"
+
+- name: copy certs
+  ansible.builtin.copy:
+    src: "{{ aws_certs | default( 'certs/') }}"
+    dest: "/aws-certs/"
+
+- name: docker_repository - Log into ECR registry and force re-authorization
+  docker_login:
+    registry_url: "{{ aws_ecr_name }}"
+    username: "AWS"
+    password: "{{ _aws_ecr_login_password }}"
+    reauthorize: yes
+
+- name: docker service definition
+  set_fact:
+    _services:
+      controller:
+        image: "{{ aws_ecr_name }}/live-inventory/controller:latest"
+        volumes:
+          - "/aws-certs:/certs"
+        environment:
+          AWSIOT_ENDPOINT:   "{{ aws_endpoint  }}"
+          AWS_CA_FILE:       "{{ aws_ca_file | default( omit ) }}"
+          AWS_CERT_FILE:     "{{ aws_cert_file | default(omit) }}"
+          AWS_PRIV_KEY_FILE: "{{ aws_priv_key_file | default(omit) }}"
+          AWS_TOPIC: "{{ aws_topic  }}"
+          CLIENT_ID: "{{ client_id }}" 
+
+
+
+      gps:
+        image: "{{ aws_ecr_name }}/live-inventory/gps:latest"
+        privileged: true
+        volumes:
+          - "/dev/ttyUSB0:/dev/ttyUSB0"
+
+      rfid:
+        image: "{{ aws_ecr_name }}/live-inventory/rfid"
+
+        environment:
+          RFID_UNIT_IP:    "192.168.178.204"
+          RFID_UNIT_POWER: "80"
+
+      mqtt-local:
+        image: eclipse-mosquitto
+        volumes:
+          - "{{ _mosquitto_config.dir }}/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+
+
+- name: services to be started
+  ansible.builtin.debug:
+    var: _services
+
+- name: "starting docker services"
+  community.docker.docker_compose:
+    project_name: "live-inventory"
+    pull: yes
+    definition:
+      version: '3'
+      services:
+        "{{ _services }}"
+  register: _r
+#  when: false

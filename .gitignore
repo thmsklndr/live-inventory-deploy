@@ -1,0 +1,4 @@
+files/certs/*.*
+vars/vars-local.yml
+vars-local.yml
+hosts

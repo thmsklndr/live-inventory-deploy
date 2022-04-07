@@ -1,0 +1,31 @@
+---
+- ansible.builtin.import_role:
+    name: time4oss.infra.bootstrap
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.debug_system_info
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.common
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.git
+  tags:
+    - speedup
+
+- ansible.builtin.import_role:
+    name: time4oss.infra.docker
+  tags:
+    - speedup
+
+
+- name: install packages
+  ansible.builtin.apt:
+    name:
+      "{{ rfidunit_packages | union(rfidunit_packages_env) }}"
