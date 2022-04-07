@@ -81,7 +81,12 @@ aws iot describe-endpoint --endpoint-type iot:Data-ATS
 
 ### SSH
 
+
 * create ssh key-pair if none available
+```
+$ thomas@ventoux:~/.ssh$ ssh-keygen -t ed25519 -a 100 -C COMMENT
+```
+
 * add identity to RPi root account
 ```
 ssh-add <identity>
