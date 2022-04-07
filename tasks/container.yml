@@ -57,8 +57,8 @@
           AWS_CA_FILE:       "{{ aws_ca_file | default( omit ) }}"
           AWS_CERT_FILE:     "{{ aws_cert_file | default(omit) }}"
           AWS_PRIV_KEY_FILE: "{{ aws_priv_key_file | default(omit) }}"
-          AWS_TOPIC: "{{ aws_topic  }}"
-          CLIENT_ID: "{{ client_id }}" 
+          AWS_TOPIC: "{{ aws_topic | default(omit) }}"
+          UNIT_ID: "{{ unit_id }}" 
 
 
 
@@ -72,8 +72,8 @@
         image: "{{ aws_ecr_name }}/live-inventory/rfid"
 
         environment:
-          RFID_UNIT_IP:    "192.168.178.204"
-          RFID_UNIT_POWER: "80"
+          RFID_UNIT_IP:    "{{ rfid_unit_ip    | default( omit ) }}"
+          RFID_UNIT_POWER: "{{ rfid_unit_power | default( omit ) }}"
 
       mqtt-local:
         image: eclipse-mosquitto
