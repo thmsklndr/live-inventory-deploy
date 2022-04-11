@@ -1,2 +1,8 @@
 rfidunit_packages: []
-#  - python3.8-venv
+
+# kernel setting for redis to improved stability during persisting DB to disk
+# https://redis.io/docs/getting-started/faq/#background-saving-fails-with-a-fork-error-on-linux
+# and https://serverfault.com/a/606193
+common_kernel_settings_add:
+  - name: vm.overcommit_memory
+    value: "1"
