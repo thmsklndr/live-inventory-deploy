@@ -1,21 +1,25 @@
-
+# Central configuration and deployment of the RPis
 ## Deployment Host machine
 
-## Preparation
+### Prerequisite
+
+Ubuntu Linux (tested on 20.04 and 21.10). On Windows options are a WSL or a virtual machine.
+
+### Preparation
 
 ```
 $ sudo apt install wget build-essential libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev python3-venv
 ```
 
-### pip for local python package management
+#### pip for local python package management
 
-```
+```bash
 $ mkdir -p $HOME/.local/bin
 ```
 
-```
-export PATH=$HOME/.local/bin:$PATH
-
+```bash
+$ export PATH=$HOME/.local/bin:$PATH
+$ echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
 ```
 ```
 pip install -U pip
@@ -24,7 +28,7 @@ pip install -U pipx
 pipx install pipenv
 ```
 
-### pyenv
+#### pyenv
 
 ```
 $ wget https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer
@@ -109,7 +113,19 @@ Start the pipenv shell
 $ pipenv shell
 ```
 
-ansible-playbook provision.yml -e target=raspberries -e env=dev --skip-tags speedup
+### Required local files
+
+The target RPis will be listed in the `hosts` file. Just copy the `hosts.tmpl` and add the actual IPs for each unit.
+
+Secondly, local organization specific variables have to be defined. Change into the `vars/` dir and copy the vars-local.tmpl file:
+
+```bash
+~/projects/live-inventory-deploy$ cd vars/
+~/projects/live-inventory-deploy/vars$ cp vars-local.tmpl vars-local.yml
+```
+
+ansible-playbook provision.yml -e target=raspberries -e env=dev
+
 ## Raspberry Pi Configuration
 
 * install the rpi imager: https://www.raspberrypi.com/software/
