@@ -4,7 +4,7 @@
   tasks:
 #    - include_vars: "00-@all.yml"
     - ansible.builtin.include_vars: "vars/vars-all.yml"
-    - ansible.builtin.include_vars: "vars/vars-{{ env }}.yml"
+    - ansible.builtin.include_vars: "vars/vars-{{ env | default( 'prod' ) }}.yml"
 
     - ansible.builtin.include_vars: "vars/vars-local.yml"
 

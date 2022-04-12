@@ -39,3 +39,5 @@ fi
 
 
 pipenv install
+
+pipenv run ansible-galaxy install -r requirements.yml
