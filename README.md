@@ -152,7 +152,7 @@ umount /mnt
 root@ubuntu:~$ cat /mnt/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 network: {config: disabled}
 
-root@ubuntu:~$ cat /etc/netplan/50-cloud-init.yaml 
+root@ubuntu:~$ cat /mnt/etc/netplan/50-cloud-init.yaml 
 network:
   version: 2
   ethernets:
