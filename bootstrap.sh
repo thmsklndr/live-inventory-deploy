@@ -25,7 +25,7 @@ pip install -U pipx
 
 pipx install pipenv
 
-if ! ( cat $HOME/.bashrc | grep bash_pyenvlocal ) ; then
+if ! ( cat $HOME/.bashrc | grep -v "^#" | grep pyenv ) ; then
     cp ./bash_pyenvlocal $HOME/.bash_pyenvlocal
     echo ". $HOME/.bash_pyenvlocal" >> $HOME/.bashrc
 fi 
@@ -41,3 +41,4 @@ fi
 pipenv install
 
 pipenv run ansible-galaxy install -r requirements.yml
+

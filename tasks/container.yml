@@ -7,16 +7,19 @@
       dir: "/data/docker/mosquitto/config"
       owner: "1883"
       group: "1883"
+    _aws_certs:
+      dir: "/aws-certs"
 
 - name: create required folder on host
-  file:
+  ansible.builtin.file:
     state: directory
     path:  "{{ item.dir }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
+#    owner: "{{ item.owner }}"
+#    group: "{{ item.group }}"
     mode:  "{{ item.mode | default( '0o755' ) }}"
   with_items:
     - "{{ _mosquitto_config }}"
+    - "{{ _aws_certs }}"
 
 - name: copy config file
   template:
@@ -26,17 +29,14 @@
     group: "{{ _mosquitto_config.group }}"
     mode:  "0o644"
 
-- name: create local certs dir
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-  loop:
-    - "/aws-certs"
-
 - name: copy certs
   ansible.builtin.copy:
-    src: "{{ aws_local_certs | default( 'certs/') }}"
-    dest: "/aws-certs/"
+    src: "{{ item.0 }}"
+    dest: "{{ _aws_certs.dir }}/{{ item.1 }}"
+  loop:
+    - [ "{{ aws_ca_file }}", "AmazonRootCA1.pem" ]
+    - [ "{{ aws_cert_file }}", "certificate.pem.crt" ]
+    - [ "{{ aws_priv_key_file }}", "private.pem.key" ]
 
 - name: docker_repository - Log into ECR registry and force re-authorization
   docker_login:
@@ -51,34 +51,44 @@
       controller:
         image: "{{ aws_ecr_name }}/live-inventory/controller:latest"
         volumes:
-          - "{{ aws_certs }}:/certs"
+          - "{{ _aws_certs.dir }}:/certs"
         environment:
-          AWSIOT_ENDPOINT:   "{{ aws_endpoint  }}"
-          AWS_CA_FILE:       "{{ aws_ca_file | default( omit ) }}"
-          AWS_CERT_FILE:     "{{ aws_cert_file | default(omit) }}"
-          AWS_PRIV_KEY_FILE: "{{ aws_priv_key_file | default(omit) }}"
-          AWS_TOPIC: "{{ aws_topic | default(omit) }}"
-          UNIT_ID: "{{ unit_id }}" 
+          UNIT_CLIENT_ID:            "{{ UNIT_CLIENT_ID | default( inventory_hostname ) }}" 
+          UNIT_FLUSH_CACHE_INTERVAL: "{{ UNIT_FLUSH_CACHE_INTERVAL | default( omit )  }}"
+
+          AWS_IOT_ENDPOINT:  "{{ AWS_IOT_ENDPOINT  }}"
+          AWS_CLIENT_ID:     "{{ AWS_CLIENT_ID }}"
+
+          AWS_TOPIC_DATA:    "{{ AWS_TOPIC_DATA }}"
+          AWS_TOPIC_STATUS:  "{{ AWS_TOPIC_STATUS | default(omit) }}"
 
 
-
-      gps:
-        image: "{{ aws_ecr_name }}/live-inventory/gps:latest"
+      rpi:
+        image: "{{ aws_ecr_name }}/live-inventory/rpi:latest"
         privileged: true
         volumes:
           - "/dev/ttyUSB0:/dev/ttyUSB0"
+        environment:
+          GPS_MOCK_DATA: "{{ GPS_MOCK_DATA | default( omit ) }}"
 
       rfid:
         image: "{{ aws_ecr_name }}/live-inventory/rfid"
-
         environment:
-          RFID_UNIT_IP:    "{{ rfid_unit_ip    | default( omit ) }}"
-          RFID_UNIT_POWER: "{{ rfid_unit_power | default( omit ) }}"
+          RFID_UNIT_IP:    "{{ RFID_UNIT_IP    | default( omit ) }}"
+          RFID_UNIT_POWER: "{{ RFID_UNIT_POWER | default( omit ) }}"
+          RFID_UNIT_POLL_INTERVAL: "{{ RFID_UNIT_POLL_INTERVAL | default( omit ) }}"
 
       mqtt-local:
         image: eclipse-mosquitto
         volumes:
           - "{{ _mosquitto_config.dir }}/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+          - "mosquitto_data:/mosquitto/data"
+          - "mosquitto_log:/mosquitto/log"
+      redis-local:
+        image: redis:6
+        command: "redis-server --save 60 1 --loglevel warning"
+        volumes:
+          - "redis_data:/data"
 
 
 - name: services to be started
@@ -93,5 +103,8 @@
       version: '3'
       services:
         "{{ _services }}"
+      volumes:
+        mosquitto_data:
+        mosquitto_log:
+        redis_data:
   register: _r
-#  when: false

@@ -8,6 +8,8 @@
 
     - ansible.builtin.include_vars: "vars/vars-local.yml"
 
+    - debug:
+        var: unit_id
     - ansible.builtin.include_tasks: tasks/infra.yml
       tags:
         - infra
