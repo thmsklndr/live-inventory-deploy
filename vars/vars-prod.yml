@@ -1,6 +1,2 @@
 ---
-
-rfidunit_packages_env: 
-  - gpsd
-  - gpsd-clients
-  - libmtp-runtime
+# nothing ..

@@ -28,8 +28,21 @@
   tags:
     - speedup
 
+- name: required packages
+  ansible.builtin.set_fact:
+    rfidunit_packages:
+      - gpsd
+      - gpsd-clients
+      - libmtp-runtime
 
 - name: install packages
   ansible.builtin.apt:
     name:
-      "{{ rfidunit_packages | union(rfidunit_packages_env) }}"
+      "{{ rfidunit_packages | union( rfidunit_packages_env | default([]) ) }}"
+
+- name: start and enable gpsd
+  ansible.builtin.service:
+    name: gpsd
+    state: started
+    enabled: yes
+

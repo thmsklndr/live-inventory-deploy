@@ -4,12 +4,13 @@
   tasks:
 #    - include_vars: "00-@all.yml"
     - ansible.builtin.include_vars: "vars/vars-all.yml"
-    - ansible.builtin.include_vars: "vars/vars-{{ env | default( 'prod' ) }}.yml"
 
-    - ansible.builtin.include_vars: "vars/vars-local.yml"
+    - ansible.builtin.include_vars: "vars/vars-{{ env | default( 'prod' ) }}.yml"
+    - ansible.builtin.include_vars: "vars/vars-local{{ org | default( '' ) }}.yml"
 
     - debug:
         var: unit_id
+
     - ansible.builtin.include_tasks: tasks/infra.yml
       tags:
         - infra

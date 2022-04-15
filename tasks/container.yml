@@ -66,12 +66,14 @@
 
           AWS_TOPIC_DATA:    "{{ AWS_TOPIC_DATA | default(omit) }}"
           AWS_TOPIC_STATUS:  "{{ AWS_TOPIC_STATUS | default(omit) }}"
+          FIX_RPI_HOST: "{{ inventory_hostname }}"
         restart: unless-stopped
 
 
       rpi:
         image: "{{ aws_ecr_name }}/live-inventory/rpi:latest"
         privileged: true
+        network_mode: host
         volumes:
           - "/dev/ttyUSB0:/dev/ttyUSB0"
         environment:
@@ -101,6 +103,8 @@
           - "redis_data:/data"
         restart: unless-stopped
 
+# healthcheck gpsd
+#netstat -an | grep 127.0.0.1:2947 | grep LISTEN &> /dev/null || echo no
 
 - name: services to be started
   ansible.builtin.debug:
