@@ -16,7 +16,7 @@
 
 - name: install the aws client
   ansible.builtin.pip:
-    name: git+https://github.com/aws/aws-cli.git@v2
+    name: git+https://github.com/aws/aws-cli.git@2.5.5
     executable: pip3
   tags:
     - speedup
