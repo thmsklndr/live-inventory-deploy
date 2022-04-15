@@ -1,5 +1,5 @@
 ---
-- hosts: "{{ target }}"
+- hosts: "{{ target | default( 'all' ) }}"
   gather_facts: false
   tasks:
 #    - include_vars: "00-@all.yml"

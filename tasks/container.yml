@@ -38,6 +38,11 @@
     - [ "{{ aws_cert_file }}", "certificate.pem.crt" ]
     - [ "{{ aws_priv_key_file }}", "private.pem.key" ]
 
+
+- name: create environment files
+  template:
+
+
 - name: docker_repository - Log into ECR registry and force re-authorization
   docker_login:
     registry_url: "{{ aws_ecr_name }}"
@@ -59,8 +64,9 @@
           AWS_IOT_ENDPOINT:  "{{ AWS_IOT_ENDPOINT  }}"
           AWS_CLIENT_ID:     "{{ AWS_CLIENT_ID }}"
 
-          AWS_TOPIC_DATA:    "{{ AWS_TOPIC_DATA }}"
+          AWS_TOPIC_DATA:    "{{ AWS_TOPIC_DATA | default(omit) }}"
           AWS_TOPIC_STATUS:  "{{ AWS_TOPIC_STATUS | default(omit) }}"
+        restart: unless-stopped
 
 
       rpi:
@@ -70,6 +76,7 @@
           - "/dev/ttyUSB0:/dev/ttyUSB0"
         environment:
           GPS_MOCK_DATA: "{{ GPS_MOCK_DATA | default( omit ) }}"
+        restart: unless-stopped
 
       rfid:
         image: "{{ aws_ecr_name }}/live-inventory/rfid"
@@ -77,6 +84,7 @@
           RFID_UNIT_IP:    "{{ RFID_UNIT_IP    | default( omit ) }}"
           RFID_UNIT_POWER: "{{ RFID_UNIT_POWER | default( omit ) }}"
           RFID_UNIT_POLL_INTERVAL: "{{ RFID_UNIT_POLL_INTERVAL | default( omit ) }}"
+        restart: unless-stopped
 
       mqtt-local:
         image: eclipse-mosquitto
@@ -84,11 +92,14 @@
           - "{{ _mosquitto_config.dir }}/mosquitto.conf:/mosquitto/config/mosquitto.conf"
           - "mosquitto_data:/mosquitto/data"
           - "mosquitto_log:/mosquitto/log"
+        restart: unless-stopped
+
       redis-local:
         image: redis:6
         command: "redis-server --save 60 1 --loglevel warning"
         volumes:
           - "redis_data:/data"
+        restart: unless-stopped
 
 
 - name: services to be started
