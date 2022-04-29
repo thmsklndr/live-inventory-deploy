@@ -88,6 +88,17 @@
           RFID_UNIT_POLL_INTERVAL: "{{ RFID_UNIT_POLL_INTERVAL | default( omit ) }}"
         restart: unless-stopped
 
+      gpsmon:
+        image: "{{ aws_ecr_name }}/live-inventory/gpsmon"
+        environment:
+          GPS_TRACK_INTERVAL: "{{ GPS_TRACK_INTERVAL    | default( omit ) }}"
+        restart: unless-stopped
+
+      gpsd:
+        image: "{{ aws_ecr_name }}/live-inventory/gpsd"
+        privileged: true
+        restart: unless-stopped
+
       mqtt-local:
         image: eclipse-mosquitto
         volumes:
@@ -97,8 +108,16 @@
         restart: unless-stopped
 
       redis-local:
-        image: redis:6
-        command: "redis-server --save 60 1 --loglevel warning"
+        image: "{{ aws_ecr_name }}/live-inventory/redis-ts:v1.6.9"
+        command:
+          - "redis-server"
+          - "--save"
+          - "60"
+          - "1"
+          - "--loglevel"
+          - "warning"
+          - "--loadmodule"
+          - "/usr/lib/redis/modules/redistimeseries.so"
         volumes:
           - "redis_data:/data"
         restart: unless-stopped

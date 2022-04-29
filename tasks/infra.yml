@@ -28,21 +28,23 @@
   tags:
     - speedup
 
-- name: required packages
-  ansible.builtin.set_fact:
-    rfidunit_packages:
-      - gpsd
-      - gpsd-clients
-      - libmtp-runtime
-
 - name: install packages
   ansible.builtin.apt:
     name:
       "{{ rfidunit_packages | union( rfidunit_packages_env | default([]) ) }}"
 
-- name: start and enable gpsd
+- name: in case gpsd is still installed on the host
+  ansible.builtin.apt:
+    name:
+      - gpsd
+      - gpsd-clients
+      - libmtp-runtime
+    state: absent
+
+- name: gpsd is running as container now, so make sure it's not running on the host
   ansible.builtin.service:
     name: gpsd
-    state: started
-    enabled: yes
+    state: stopped
+    enabled: no
+  ignore_errors: yes
 

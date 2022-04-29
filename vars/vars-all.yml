@@ -5,3 +5,5 @@
 common_kernel_settings_add:
   - name: vm.overcommit_memory
     value: "1"
+
+rfidunit_packages: []
