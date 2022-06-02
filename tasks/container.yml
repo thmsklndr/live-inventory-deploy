@@ -60,6 +60,7 @@
         environment:
           UNIT_CLIENT_ID:            "{{ UNIT_CLIENT_ID | default( inventory_hostname ) }}" 
           UNIT_FLUSH_CACHE_INTERVAL: "{{ UNIT_FLUSH_CACHE_INTERVAL | default( omit )  }}"
+          UNIT_GPS_TS_DEBUG:         "{{ UNIT_GPS_TS_DEBUG         | default( omit )  }}"
 
           AWS_IOT_ENDPOINT:  "{{ AWS_IOT_ENDPOINT  }}"
           AWS_CLIENT_ID:     "{{ AWS_CLIENT_ID }}"

@@ -71,8 +71,13 @@ aws ecr get-login-password --region eu-central-1 | docker login --username AWS -
 
 ### IOT
 
+adding `-d` to the next commands will enable debug output
+
 ```bash
-$ mosquitto_pub -h ab35t74ns0kdw-ats.iot.eu-central-1.amazonaws.com -p 8883 -t test -m hello --cafile certs/AmazonRootCA1.pem --cert certs/8e1d1e359f0e074c70721d0ba58f91ac293648f26e9895344a3a2507effb2434-certificate.pem.crt --key certs/8e1d1e359f0e074c70721d0ba58f91ac293648f26e9895344a3a2507effb2434-private.pem.key -d 
+$ mosquitto_pub -h ab35t74ns0kdw-ats.iot.eu-central-1.amazonaws.com -p 8883 -t test -m "some test data" --cafile certs/AmazonRootCA1.pem --cert certs/8e1d1e359f0e074c70721d0ba58f91ac293648f26e9895344a3a2507effb2434-certificate.pem.crt --key certs/8e1d1e359f0e074c70721d0ba58f91ac293648f26e9895344a3a2507effb2434-private.pem.key
+```
+```bash
+$ mosquitto_sub -h ab35t74ns0kdw-ats.iot.eu-central-1.amazonaws.com -p 8883 -t '#'  --cafile certs/AmazonRootCA1.pem --cert certs/8e1d1e359f0e074c70721d0ba58f91ac293648f26e9895344a3a2507effb2434-certificate.pem.crt --key certs/8e1d1e359f0e074c70721d0ba58f91ac293648f26e9895344a3a2507effb2434-private.pem.key  | tee ~/aws.log
 ```
 
 * getting the mqtt endpoint (based on the account details in ~/.aws/):
