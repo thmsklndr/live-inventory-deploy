@@ -13,10 +13,10 @@ sudo apt-get update
 sudo apt-get install --no-install-recommends -y \
   wget build-essential libreadline-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev python3-venv
 
-if ! (which rpi-imager) ; then
-    sudo wget https://downloads.raspberrypi.org/imager/imager_latest_amd64.deb
-    sudo apt install ./imager_latest_amd64.deb
-fi
+#if ! (which rpi-imager) ; then
+#    sudo wget https://downloads.raspberrypi.org/imager/imager_latest_amd64.deb
+#    sudo apt install ./imager_latest_amd64.deb
+#fi
 
 mkdir -p $HOME/.local/bin
 
