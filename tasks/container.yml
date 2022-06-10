@@ -98,6 +98,8 @@
       gpsd:
         image: "{{ aws_ecr_name }}/live-inventory/gpsd"
         privileged: true
+        environment:
+          GPS_DEV: "{{ GPS_DEV | default('/dev/ttyUSB0') }}"
         ports: "{{ [ '2947:2947' ] if GPSD_DEBUG else omit }}"
         restart: unless-stopped
 
