@@ -71,15 +71,15 @@
         restart: unless-stopped
 
 
-      rpi:
-        image: "{{ aws_ecr_name }}/live-inventory/rpi:latest"
-        privileged: true
-        network_mode: host
-        volumes:
-          - "/dev/ttyUSB0:/dev/ttyUSB0"
-        environment:
-          GPS_MOCK_DATA: "{{ GPS_MOCK_DATA | default( omit ) }}"
-        restart: unless-stopped
+      # rpi:
+      #   image: "{{ aws_ecr_name }}/live-inventory/rpi:latest"
+      #   privileged: true
+      #   network_mode: host
+      #   volumes:
+      #     - "/dev/ttyUSB0:/dev/ttyUSB0"
+      #   environment:
+      #     GPS_MOCK_DATA: "{{ GPS_MOCK_DATA | default( omit ) }}"
+      #   restart: unless-stopped
 
       rfid:
         image: "{{ aws_ecr_name }}/live-inventory/rfid"
@@ -98,6 +98,7 @@
       gpsd:
         image: "{{ aws_ecr_name }}/live-inventory/gpsd"
         privileged: true
+        ports: "{{ [ '2947:2947' ] if GPSD_DEBUG else omit }}"
         restart: unless-stopped
 
       mqtt-local:
@@ -108,6 +109,9 @@
           - "mosquitto_log:/mosquitto/log"
         restart: unless-stopped
 
+      #
+      # Default retention time in ms (259200000 eq 3d)
+      # 
       redis-local:
         image: "{{ aws_ecr_name }}/live-inventory/redis-ts:v1.6.9"
         command:
@@ -119,6 +123,8 @@
           - "warning"
           - "--loadmodule"
           - "/usr/lib/redis/modules/redistimeseries.so"
+          - "RETENTION_POLICY"
+          - "259200000"
         volumes:
           - "redis_data:/data"
         restart: unless-stopped
